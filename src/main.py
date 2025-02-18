@@ -15,19 +15,19 @@ class Product:
         """
         self.name = name
         self.description = description
-        self._price = price  # Приватный атрибут
+        self.__price = price  # Приватный атрибут с двойным подчеркиванием
         self.quantity = quantity
 
     @property
     def price(self):
         """Геттер для цены"""
-        return self._price
+        return self.__price
 
     @price.setter
     def price(self, new_price):
         """Сеттер для цены"""
         if new_price > 0:
-            self._price = new_price
+            self.__price = new_price
         else:
             print("Цена не должна быть нулевая или отрицательная")
 
@@ -63,11 +63,13 @@ class Category:
         # Обновляем счетчик категорий
         Category.category_count += 1
 
-    def add_product(self, product: Product):
+    def add_product(self, product):
         """
         Добавляет товар в категорию.
-        :param product: Объект класса Product
+        :param product: Объект класса Product или его наследников
         """
+        if not isinstance(product, Product):
+            raise TypeError("Можно добавлять только объекты класса Product или его наследников")
         self._products.append(product)
         Category.product_count += 1
 

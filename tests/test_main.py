@@ -1,9 +1,6 @@
 import sys
 import os
-from main import (
-    Product,
-    Category
-)  # Разбит длинный импорт на несколько строк (исправлена ошибка E501)
+from main import Product, Category  # Импорт исправлен
 
 # Принудительно добавляем `src` в PYTHONPATH
 sys.path.insert(
@@ -46,6 +43,17 @@ def test_add_product():
     category.add_product(product)
 
     assert "Кубики, 120.99 руб. Остаток: 20 шт." in category.products
+
+
+def test_add_invalid_product():
+    category = Category("Игрушки", "Детские игрушки")
+
+    try:
+        category.add_product("не продукт")
+    except TypeError as e:
+        assert str(e) == "Можно добавлять только объекты класса Product или его наследников"
+    else:
+        assert False, "Ожидалось исключение TypeError"
 
 
 def test_price_setter():
