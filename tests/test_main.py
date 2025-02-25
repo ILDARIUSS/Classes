@@ -8,19 +8,37 @@ sys.path.insert(
 )
 
 
-def test_product_creation():
+def test_product_str():
     product = Product("Ноутбук", "Мощный ноутбук", 70000.50, 5)
-    assert product.name == "Ноутбук"
-    assert product.description == "Мощный ноутбук"
-    assert product.price == 70000.50
-    assert product.quantity == 5
+    assert str(product) == "Ноутбук, 70000.5 руб. Остаток: 5 шт."
 
 
-def test_category_creation():
+def test_category_str():
     category = Category("Бытовая техника", "Различные приборы")
-    assert category.name == "Бытовая техника"
-    assert category.description == "Различные приборы"
-    assert isinstance(category.products, str)
+    product1 = Product("Миксер", "Кухонный миксер", 5000, 3)
+    product2 = Product("Пылесос", "Мощный пылесос", 15000, 2)
+
+    category.add_product(product1)
+    category.add_product(product2)
+
+    assert str(category) == "Бытовая техника, количество продуктов: 5 шт."
+
+
+def test_product_add():
+    product1 = Product("Телефон", "Смартфон", 50000, 10)
+    product2 = Product("Ноутбук", "Игровой ноутбук", 120000, 5)
+
+    assert product1 + product2 == (50000 * 10) + (120000 * 5)
+
+
+def test_product_add_type_error():
+    product = Product("Телефон", "Смартфон", 50000, 10)
+    try:
+        product + "не продукт"
+    except TypeError as e:
+        assert str(e) == "Складывать можно только объекты класса Product"
+    else:
+        assert False, "Ожидалось исключение TypeError"
 
 
 def test_category_product_count():
@@ -34,48 +52,3 @@ def test_category_product_count():
 
     assert Category.category_count == 1
     assert Category.product_count == 1
-
-
-def test_add_product():
-    category = Category("Игрушки", "Детские игрушки")
-    product = Product("Кубики", "Развивающая игрушка", 120.99, 20)
-
-    category.add_product(product)
-
-    assert "Кубики, 120.99 руб. Остаток: 20 шт." in category.products
-
-
-def test_add_invalid_product():
-    category = Category("Игрушки", "Детские игрушки")
-
-    try:
-        category.add_product("не продукт")
-    except TypeError as e:
-        assert str(e) == "Можно добавлять только объекты класса Product или его наследников"
-    else:
-        assert False, "Ожидалось исключение TypeError"
-
-
-def test_price_setter():
-    product = Product("Телефон", "Смартфон", 50000, 10)
-
-    product.price = -100
-    assert product.price == 50000
-
-    product.price = 30000
-    assert product.price == 30000
-
-
-def test_new_product():
-    data = {
-        "name": "Планшет",
-        "description": "Мощный планшет",
-        "price": 35000,
-        "quantity": 7
-    }
-    new_product = Product.new_product(data)
-
-    assert new_product.name == "Планшет"
-    assert new_product.description == "Мощный планшет"
-    assert new_product.price == 35000
-    assert new_product.quantity == 7

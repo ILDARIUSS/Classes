@@ -31,6 +31,19 @@ class Product:
         else:
             print("Цена не должна быть нулевая или отрицательная")
 
+    def __str__(self):
+        """Строковое представление товара"""
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other):
+        """
+        Магический метод сложения.
+        Складывает полную стоимость всех товаров на складе.
+        """
+        if not isinstance(other, Product):
+            raise TypeError("Складывать можно только объекты класса Product")
+        return (self.price * self.quantity) + (other.price * other.quantity)
+
     @classmethod
     def new_product(cls, product_data: dict):
         """
@@ -69,7 +82,10 @@ class Category:
         :param product: Объект класса Product или его наследников
         """
         if not isinstance(product, Product):
-            raise TypeError("Можно добавлять только объекты класса Product или его наследников")
+            raise TypeError(
+                "Можно добавлять только объекты класса Product "
+                "или его наследников"
+            )
         self._products.append(product)
         Category.product_count += 1
 
@@ -80,40 +96,9 @@ class Category:
         Возвращает строку со всеми товарами в формате:
         "Название продукта, 80 руб. Остаток: 15 шт."
         """
-        return "\n".join(
-            [
-                f"{p.name}, {p.price} руб. Остаток: {p.quantity} шт."
-                for p in self._products
-            ]
-        )
+        return "\n".join(str(p) for p in self._products)
 
-
-if __name__ == "__main__":
-    category1 = Category("Электроника", "Гаджеты и устройства")
-    product1 = Product("Смартфон", "Мощный телефон", 50000.99, 10)
-    product2 = Product("Ноутбук", "Игровой ноутбук", 120000, 5)
-
-    category1.add_product(product1)
-    category1.add_product(product2)
-
-    print(f"Категорий: {Category.category_count}")
-    print(f"Товаров: {Category.product_count}")
-
-    print("\nСписок товаров в категории:")
-    print(category1.products)
-
-    product1.price = -500  # Должно вывести сообщение об ошибке
-    print(f"Цена смартфона: {product1.price}")
-
-    new_product_data = {
-        "name": "Планшет",
-        "description": "Мощный планшет",
-        "price": 35000,
-        "quantity": 7
-    }
-    new_product = Product.new_product(new_product_data)
-    print(
-        "\nСоздан новый продукт: "
-        f"{new_product.name}, {new_product.price} руб., "
-        f"Остаток: {new_product.quantity} шт."
-    )
+    def __str__(self):
+        """Строковое представление категории"""
+        total_quantity = sum(p.quantity for p in self._products)
+        return f"{self.name}, количество продуктов: {total_quantity} шт."
