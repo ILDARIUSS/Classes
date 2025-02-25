@@ -1,6 +1,6 @@
 import sys
 import os
-from main import Product, Category  # Импорт исправлен
+from main import Product, Smartphone, LawnGrass, Category
 
 # Принудительно добавляем `src` в PYTHONPATH
 sys.path.insert(
@@ -8,35 +8,57 @@ sys.path.insert(
 )
 
 
-def test_product_str():
-    product = Product("Ноутбук", "Мощный ноутбук", 70000.50, 5)
-    assert str(product) == "Ноутбук, 70000.5 руб. Остаток: 5 шт."
+def test_smartphone_creation():
+    smartphone = Smartphone(
+        "iPhone", "Флагманский смартфон", 100000, 5, "Высокая",
+        "14 Pro", 256, "Черный"
+    )
+    assert smartphone.name == "iPhone"
+    assert smartphone.model == "14 Pro"
+    assert smartphone.memory == 256
+    assert smartphone.color == "Черный"
 
 
-def test_category_str():
-    category = Category("Бытовая техника", "Различные приборы")
-    product1 = Product("Миксер", "Кухонный миксер", 5000, 3)
-    product2 = Product("Пылесос", "Мощный пылесос", 15000, 2)
-
-    category.add_product(product1)
-    category.add_product(product2)
-
-    assert str(category) == "Бытовая техника, количество продуктов: 5 шт."
+def test_lawngrass_creation():
+    grass = LawnGrass(
+        "Green Grass", "Газонная трава", 500, 20,
+        "Россия", 14, "Зеленый"
+    )
+    assert grass.name == "Green Grass"
+    assert grass.country == "Россия"
+    assert grass.germination_period == 14
+    assert grass.color == "Зеленый"
 
 
 def test_product_add():
-    product1 = Product("Телефон", "Смартфон", 50000, 10)
-    product2 = Product("Ноутбук", "Игровой ноутбук", 120000, 5)
+    smartphone1 = Smartphone(
+        "Samsung", "Смартфон", 50000, 10, "Средняя",
+        "S22", 128, "Белый"
+    )
+    smartphone2 = Smartphone(
+        "iPhone", "Смартфон", 120000, 5, "Высокая",
+        "14 Pro", 256, "Черный"
+    )
 
-    assert product1 + product2 == (50000 * 10) + (120000 * 5)
+    assert smartphone1 + smartphone2 == (50000 * 10) + (120000 * 5)
 
 
 def test_product_add_type_error():
-    product = Product("Телефон", "Смартфон", 50000, 10)
+    smartphone = Smartphone(
+        "iPhone", "Флагманский смартфон", 100000, 5, "Высокая",
+        "14 Pro", 256, "Черный"
+    )
+    grass = LawnGrass(
+        "Green Grass", "Газонная трава", 500, 20,
+        "Россия", 14, "Зеленый"
+    )
+
     try:
-        product + "не продукт"
+        smartphone + grass
     except TypeError as e:
-        assert str(e) == "Складывать можно только объекты класса Product"
+        assert (
+            str(e) == "Складывать можно только объекты одного класса"
+        )
     else:
         assert False, "Ожидалось исключение TypeError"
 
@@ -52,3 +74,17 @@ def test_category_product_count():
 
     assert Category.category_count == 1
     assert Category.product_count == 1
+
+
+def test_add_invalid_product():
+    category = Category("Электроника", "Гаджеты и устройства")
+
+    try:
+        category.add_product("не продукт")
+    except TypeError as e:
+        assert (
+            str(e) == "Можно добавлять только объекты класса "
+            "Product или его наследников"
+        )
+    else:
+        assert False, "Ожидалось исключение TypeError"

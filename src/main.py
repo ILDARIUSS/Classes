@@ -40,23 +40,51 @@ class Product:
         Магический метод сложения.
         Складывает полную стоимость всех товаров на складе.
         """
-        if not isinstance(other, Product):
-            raise TypeError("Складывать можно только объекты класса Product")
+        if not isinstance(other, type(self)):
+            raise TypeError("Складывать можно только объекты одного класса")
         return (self.price * self.quantity) + (other.price * other.quantity)
 
-    @classmethod
-    def new_product(cls, product_data: dict):
+
+class Smartphone(Product):
+    def __init__(
+        self,
+        name: str,
+        description: str,
+        price: float,
+        quantity: int,
+        efficiency: str,
+        model: str,
+        memory: int,
+        color: str
+    ):
         """
-        Класс-метод для создания продукта из словаря.
-        :param product_data: Словарь с данными о товаре
-        :return: Экземпляр Product
+        Инициализация смартфона.
         """
-        return cls(
-            name=product_data["name"],
-            description=product_data["description"],
-            price=product_data["price"],
-            quantity=product_data["quantity"]
-        )
+        super().__init__(name, description, price, quantity)
+        self.efficiency = efficiency
+        self.model = model
+        self.memory = memory
+        self.color = color
+
+
+class LawnGrass(Product):
+    def __init__(
+        self,
+        name: str,
+        description: str,
+        price: float,
+        quantity: int,
+        country: str,
+        germination_period: int,
+        color: str
+    ):
+        """
+        Инициализация газонной травы.
+        """
+        super().__init__(name, description, price, quantity)
+        self.country = country
+        self.germination_period = germination_period
+        self.color = color
 
 
 class Category:
