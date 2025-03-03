@@ -24,18 +24,11 @@ class BaseProduct(ABC):
         """Абстрактный метод строкового представления"""
         pass
 
-    @property
-    def price(self):
-        """Геттер для цены"""
-        return self._price
-
-    @price.setter
-    def price(self, new_price):
-        """Сеттер для цены"""
-        if new_price > 0:
-            self._price = new_price
-        else:
-            print("Цена не должна быть нулевая или отрицательная")
+    @classmethod
+    @abstractmethod
+    def new_product(cls, product_data):
+        """Абстрактный метод для создания нового продукта"""
+        pass
 
 
 class PrintMixin:
@@ -50,6 +43,11 @@ class PrintMixin:
 class Product(PrintMixin, BaseProduct):
     """Класс товаров, наследующий базовый продукт и использующий миксин."""
 
+    @property
+    def price(self):
+        """Геттер для цены"""
+        return self._price
+
     def __str__(self):
         return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
 
@@ -61,6 +59,20 @@ class Product(PrintMixin, BaseProduct):
         if not isinstance(other, type(self)):
             raise TypeError("Складывать можно только объекты одного класса")
         return (self.price * self.quantity) + (other.price * other.quantity)
+
+    @classmethod
+    def new_product(cls, product_data: dict):
+        """
+        Класс-метод для создания продукта из словаря.
+        :param product_data: Словарь с данными о товаре
+        :return: Экземпляр Product
+        """
+        return cls(
+            name=product_data["name"],
+            description=product_data["description"],
+            price=product_data["price"],
+            quantity=product_data["quantity"]
+        )
 
 
 class Smartphone(Product):

@@ -1,8 +1,10 @@
 import sys
 import os
+# Импорты из `main` после настройки PYTHONPATH
 from main import BaseProduct, Product, Smartphone, LawnGrass
 
-# Принудительно добавляем `src` в PYTHONPATH
+# Принудительно добавляем `src` в PYTHONPATH перед импортами
+
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
 )
@@ -29,6 +31,7 @@ def test_print_mixin(capsys):
 
 
 def test_product_creation():
+    """Проверяем создание продукта."""
     product = Product("Ноутбук", "Мощный ноутбук", 70000.50, 5)
     assert product.name == "Ноутбук"
     assert product.description == "Мощный ноутбук"
@@ -37,6 +40,7 @@ def test_product_creation():
 
 
 def test_smartphone_creation():
+    """Проверяем создание смартфона."""
     smartphone = Smartphone(
         "iPhone", "Флагманский смартфон", 100000, 5, "Высокая",
         "14 Pro", 256, "Черный"
@@ -48,6 +52,7 @@ def test_smartphone_creation():
 
 
 def test_lawngrass_creation():
+    """Проверяем создание газонной травы."""
     grass = LawnGrass(
         "Green Grass", "Газонная трава", 500, 20,
         "Россия", 14, "Зеленый"
