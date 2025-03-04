@@ -4,26 +4,6 @@ from abc import ABC, abstractmethod
 class BaseProduct(ABC):
     """Абстрактный базовый класс для всех продуктов."""
 
-    def __init__(
-        self, name: str, description: str, price: float, quantity: int
-    ):
-        """
-        Инициализация базового продукта.
-        :param name: Название товара
-        :param description: Описание товара
-        :param price: Цена товара
-        :param quantity: Количество в наличии
-        """
-        self.name = name
-        self.description = description
-        self._price = price  # Приватный атрибут
-        self.quantity = quantity
-
-    @abstractmethod
-    def __str__(self):
-        """Абстрактный метод строкового представления"""
-        pass
-
     @classmethod
     @abstractmethod
     def new_product(cls, product_data):
@@ -42,6 +22,22 @@ class PrintMixin:
 
 class Product(PrintMixin, BaseProduct):
     """Класс товаров, наследующий базовый продукт и использующий миксин."""
+
+    def __init__(
+        self, name: str, description: str, price: float, quantity: int
+    ):
+        """
+        Инициализация продукта.
+        :param name: Название товара
+        :param description: Описание товара
+        :param price: Цена товара
+        :param quantity: Количество в наличии
+        """
+        super().__init__()  # Вызываем __init__ PrintMixin
+        self.name = name
+        self.description = description
+        self._price = price  # Приватный атрибут
+        self.quantity = quantity
 
     @property
     def price(self):
