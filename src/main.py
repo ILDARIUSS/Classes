@@ -32,8 +32,15 @@ class Product(PrintMixin, BaseProduct):
         :param description: Описание товара
         :param price: Цена товара
         :param quantity: Количество в наличии
+        :raises ValueError: Если количество товара равно 0
         """
         super().__init__()  # Вызываем __init__ PrintMixin
+
+        if quantity == 0:
+            raise ValueError(
+                "Товар с нулевым количеством не может быть добавлен"
+            )
+
         self.name = name
         self.description = description
         self._price = price  # Приватный атрибут
@@ -71,38 +78,59 @@ class Product(PrintMixin, BaseProduct):
         )
 
 
-class Smartphone(Product):
-    def __init__(
-        self, name: str, description: str, price: float, quantity: int,
-        efficiency: str, model: str, memory: int, color: str
-    ):
-        """Инициализация смартфона."""
-        super().__init__(name, description, price, quantity)
-        self.efficiency = efficiency
-        self.model = model
-        self.memory = memory
-        self.color = color
+class Category:
+    """Класс для хранения категорий товаров."""
+
+    category_count = 0  # Счетчик категорий
+    product_count = 0  # Счетчик товаров
+
+    def __init__(self, name: str, description: str):
+        """
+        Инициализация категории.
+        :param name: Название категории
+        :param description: Описание категории
+        """
+        self.name = name
+        self.description = description
+        self._products = []  # Приватный список товаров
+
+        # Обновляем счетчик категорий
+        Category.category_count += 1
+
+    def add_product(self, product):
+        """
+        Добавляет товар в категорию.
+        :param product: Объект класса Product или его наследников
+        """
+        if not isinstance(product, Product):
+            raise TypeError(
+                "Можно добавлять только объекты класса Product "
+                "или его наследников"
+            )
+        self._products.append(product)
+        Category.product_count += 1
+
+    @property
+    def products(self):
+        """
+        Геттер для списка товаров.
+        Возвращает строку со всеми товарами в формате:
+        "Название продукта, 80 руб. Остаток: 15 шт."
+        """
+        return "\n".join(str(p) for p in self._products)
+
+    def average_price(self):
+        """
+        Метод для вычисления среднего ценника товаров в категории.
+        :return: Средняя цена товаров или 0, если товаров нет.
+        """
+        try:
+            total_price = sum(p.price for p in self._products)
+            return total_price / len(self._products)
+        except ZeroDivisionError:
+            return 0
 
     def __str__(self):
-        return (
-            f"{self.name} ({self.model}), {self.price} руб., "
-            f"цвет {self.color}"
-        )
-
-
-class LawnGrass(Product):
-    def __init__(
-        self, name: str, description: str, price: float, quantity: int,
-        country: str, germination_period: int, color: str
-    ):
-        """Инициализация газонной травы."""
-        super().__init__(name, description, price, quantity)
-        self.country = country
-        self.germination_period = germination_period
-        self.color = color
-
-    def __str__(self):
-        return (
-            f"{self.name} (из {self.country}), {self.price} руб., "
-            f"цвет {self.color}"
-        )
+        """Строковое представление категории"""
+        total_quantity = sum(p.quantity for p in self._products)
+        return f"{self.name}, количество продуктов: {total_quantity} шт."

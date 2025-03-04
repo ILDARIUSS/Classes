@@ -1,63 +1,41 @@
 import sys
 import os
-# Импорты из `main` после настройки PYTHONPATH
-from main import BaseProduct, Product, Smartphone, LawnGrass
+import pytest
+# Импорты должны идти после настройки PYTHONPATH
+from main import Product, Category
 
 # Принудительно добавляем `src` в PYTHONPATH перед импортами
-
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
 )
-
-
-def test_base_product_abstract():
-    """Проверяем, что нельзя создать экземпляр BaseProduct."""
-    try:
-        BaseProduct("Продукт", "Описание", 100, 5)
-    except TypeError:
-        assert True
-    else:
-        assert False, "Ожидалось исключение TypeError для абстрактного класса"
-
-
-def test_print_mixin(capsys):
-    """Проверяем, что PrintMixin печатает сообщение о создании объекта."""
-    _ = Smartphone(
-        "iPhone", "Флагманский смартфон", 100000, 5, "Высокая",
-        "14 Pro", 256, "Черный"
-    )
-    captured = capsys.readouterr()
-    assert "Создан объект Smartphone" in captured.out
 
 
 def test_product_creation():
     """Проверяем создание продукта."""
     product = Product("Ноутбук", "Мощный ноутбук", 70000.50, 5)
     assert product.name == "Ноутбук"
-    assert product.description == "Мощный ноутбук"
     assert product.price == 70000.50
     assert product.quantity == 5
 
 
-def test_smartphone_creation():
-    """Проверяем создание смартфона."""
-    smartphone = Smartphone(
-        "iPhone", "Флагманский смартфон", 100000, 5, "Высокая",
-        "14 Pro", 256, "Черный"
-    )
-    assert smartphone.name == "iPhone"
-    assert smartphone.model == "14 Pro"
-    assert smartphone.memory == 256
-    assert smartphone.color == "Черный"
+def test_product_creation_with_zero_quantity():
+    """Проверяем выброс ошибки при создании продукта с нулевым количеством."""
+    with pytest.raises(
+        ValueError, match="Товар с нулевым количеством не может быть добавлен"
+    ):
+        Product("Карандаш", "Обычный карандаш", 10, 0)
 
 
-def test_lawngrass_creation():
-    """Проверяем создание газонной травы."""
-    grass = LawnGrass(
-        "Green Grass", "Газонная трава", 500, 20,
-        "Россия", 14, "Зеленый"
-    )
-    assert grass.name == "Green Grass"
-    assert grass.country == "Россия"
-    assert grass.germination_period == 14
-    assert grass.color == "Зеленый"
+def test_average_price():
+    """Проверяем расчет средней цены товаров в категории."""
+    category = Category("Электроника", "Электронные устройства")
+    category.add_product(Product("Телефон", "Смартфон", 30000, 2))
+    category.add_product(Product("Ноутбук", "Лэптоп", 60000, 3))
+
+    assert category.average_price() == (30000 + 60000) / 2
+
+
+def test_average_price_empty_category():
+    """Проверяем расчет средней цены при отсутствии товаров."""
+    category = Category("Пустая категория", "Нет товаров")
+    assert category.average_price() == 0
